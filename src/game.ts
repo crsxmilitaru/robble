@@ -216,7 +216,7 @@ export class Game implements GameState {
       result.placements.forEach(p => {
         const isBlank = p.tile.isBlank;
         this.board[p.row][p.col] = { letter: isBlank ? ' ' : p.tile.letter, points: isBlank ? 0 : p.tile.points, isBlank, assignedLetter: p.assignedLetter };
-        const idx = this.computerRack.indexOf(p.tile);
+        const idx = this.computerRack.findIndex(t => t.id === p.tile.id);
         if (idx !== -1) this.computerRack.splice(idx, 1);
       });
       this.computerScore += result.score;

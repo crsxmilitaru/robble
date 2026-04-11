@@ -7,10 +7,10 @@
     <meta name="description"
         content="Joacă Robble în limba română online gratuit. Antrenează-ți mintea cu cel mai popular joc de cuvinte împotriva AI-ului sau a prietenilor.">
     <title>Robble - Joc de cuvinte</title>
-    <link rel="icon" type="image/png" href="/robble/icon-192.png" />
-    <link rel="manifest" href="/robble/manifest.json" />
+    <link rel="icon" type="image/png" href="/icon-192.png" />
+    <link rel="manifest" href="/manifest.json" />
     <link rel="stylesheet" href="/src/styles/tooltips.css">
-    <link rel="preload" href="/robble/icon-192.png" as="image">
+    <link rel="preload" href="/icon-192.png" as="image">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -112,9 +112,9 @@
 
 <body>
     <div id="loading-screen">
-        <img src="/robble/icon-192.png" class="loading-logo" alt="Robble Icon">
+        <img src="/icon-192.png" class="loading-logo" alt="Robble Icon">
         <div class="spinner"></div>
-        <p>Se încarcă dicționarul românesc...</p>
+        <p>Se încarcă dicționarul...</p>
         <p class="sub" id="load-status">Conectare...</p>
     </div>
     <div id="app" class="hidden">
@@ -130,10 +130,12 @@
                     <span class="material-symbols-outlined tiles-icon" aria-hidden="true">dashboard_customize</span>
                     <div class="tile-stat" data-tooltip="Total piese rămase în sac"><span
                             class="label">TOATE:</span><span id="remaining-count">100</span></div>
-                    <div class="tile-stat" data-tooltip="Piesele tale"><span class="label">TU:</span><span
+                    <div class="tile-stat desktop-only" data-tooltip="Piesele tale"><span class="label">TU:</span><span
                             id="player-count">7</span></div>
-                    <div class="tile-stat" data-tooltip="Piese AI"><span class="label">AI:</span><span
+                    <div class="tile-stat desktop-only" data-tooltip="Piese AI"><span class="label">AI:</span><span
                             id="computer-count">7</span></div>
+                    <div class="tile-stat mobile-only" data-tooltip="Tu / AI"><span id="rack-counts-combined">7/7</span>
+                    </div>
                     <div style="width: 1px; height: 16px; background: var(--gray-200); margin: 0 2px;"></div>
                     <span class="material-symbols-outlined tiles-icon" aria-hidden="true">speed</span>
                     <div class="tile-stat" data-tooltip="Dificultate AI"><span class="label">DIF:</span><span

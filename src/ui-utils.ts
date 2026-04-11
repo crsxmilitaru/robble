@@ -67,7 +67,9 @@ export function updateScores(playerScore: number, computerScore: number, isPlaye
 
 export function updateTileCounts(bagCount: number, playerCount: number, computerCount: number): void {
   const r = document.getElementById('remaining-count'), p = document.getElementById('player-count'), c = document.getElementById('computer-count');
+  const combined = document.getElementById('rack-counts-combined');
   if (r) r.textContent = String(bagCount); if (p) p.textContent = String(playerCount); if (c) c.textContent = String(computerCount);
+  if (combined) combined.textContent = `${playerCount}/${computerCount}`;
 }
 
 export function updateDifficultyDisplay(difficulty: string): void {
@@ -137,7 +139,7 @@ export function initTooltips(): void {
   };
 
   updateTooltips();
-  
+
   // Also hide tooltip when clicking anywhere else
   document.addEventListener('mousedown', hideTooltip);
   document.addEventListener('touchstart', hideTooltip, { passive: true });

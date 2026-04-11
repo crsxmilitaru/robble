@@ -83,13 +83,18 @@
   letter-spacing: .05em
 }
 
+.tile-stat.mobile-only {
+  display: none;
+}
+
 .tile-stat .label {
   opacity: .8
 }
 
 #remaining-count,
 #player-count,
-#computer-count {
+#computer-count,
+#rack-counts-combined {
   color: var(--text);
   background: var(--gray-200);
   padding: 2px 6px;
