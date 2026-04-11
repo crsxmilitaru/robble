@@ -1,0 +1,28 @@
+{
+  "name": "robble-ro",
+  "version": "1.0.0",
+  "description": "Un joc de cuvinte în limba română",
+  "author": "Cristian Militaru",
+  "license": "ISC",
+  "homepage": "https://crsxmilitaru.github.io/robble/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/crsxmilitaru/robble"
+  },
+  "keywords": [
+    "robble",
+    "romanian",
+    "game"
+  ],
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "terser": "^5.46.1",
+    "typescript": "^6.0.2",
+    "vite": "^8.0.8"
+  }
+}

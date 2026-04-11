@@ -1,0 +1,81 @@
+:root {
+  /* Zinc Palette */
+  --zinc-50: #fafafa;
+  --zinc-100: #f4f4f5;
+  --zinc-200: #e4e4e7;
+  --zinc-300: #d4d4d8;
+  --zinc-400: #a1a1aa;
+  --zinc-500: #71717a;
+  --zinc-600: #52525b;
+  --zinc-700: #3f3f46;
+  --zinc-800: #27272a;
+  --zinc-900: #18181b;
+
+  --bg: var(--zinc-50);
+  --surface: rgba(255, 255, 255, .75);
+  --surface-solid: #fff;
+  --border: rgba(24, 24, 27, 0.08);
+  --board-outer: #fff;
+  --board-bg: #fdfdfd;
+  --cell-border: var(--zinc-100);
+  
+  --tile-bg: #ffffff;
+  --tile-border: var(--zinc-100);
+  --tile-text: var(--zinc-900);
+  
+  /* Modern Stacked Shadow Tokens */
+  --tile-shadow: 
+    1px 1px 0 var(--zinc-100), 
+    2px 2px 0 var(--zinc-200), 
+    3px 3px 0 var(--zinc-300), 
+    4px 4px 6px rgba(0,0,0,0.06);
+    
+  --tile-shadow-hover: 
+    1px 1px 0 var(--zinc-100), 
+    2px 2px 0 var(--zinc-200), 
+    3px 3px 0 var(--zinc-300), 
+    4px 4px 0 var(--zinc-300),
+    6px 6px 12px rgba(0,0,0,0.08);
+
+  --tile-shadow-selected: 
+    1px 1px 0 var(--zinc-300), 
+    2px 2px 0 var(--zinc-400), 
+    3px 3px 0 var(--zinc-500), 
+    4px 4px 0 var(--zinc-500),
+    5px 5px 0 var(--zinc-600),
+    7px 7px 16px rgba(24, 24, 27, 0.2);
+
+  /* Softened Bonus Colors */
+  --tw-color: #fca5a5; /* Triple Word: Darker pastel red */
+  --dw-color: #ffe4e6; /* Double Word: Light pastel red */
+  --tl-color: #93c5fd; /* Triple Letter: Darker pastel blue */
+  --dl-color: #dbeafe; /* Double Letter: Light pastel blue */
+  --center-color: #fef08a; /* Center: Pastel yellow */
+  
+  --text: var(--zinc-900);
+  --text-muted: var(--zinc-500);
+  --accent: var(--zinc-900);
+  --accent-hover: var(--zinc-800);
+  --accent-bg: rgba(24, 24, 27, .05);
+  --accent-border: rgba(24, 24, 27, .1);
+  
+  --success: #10b981;
+  --success-hover: #059669;
+
+  --gray-100: var(--zinc-100);
+  --gray-200: var(--zinc-200);
+  --gray-400: var(--zinc-400);
+  --gray-700: var(--zinc-700);
+  --white: #fff;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 1.75rem;
+  --radius-xl: 2.2rem;
+  --radius-pill: 9999px;
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, .04);
+  --shadow-md: 0 4px 12px rgba(24, 24, 27, .06);
+  --shadow-lg: 0 12px 40px rgba(24, 24, 27, .1);
+  --shadow-xl: 0 32px 80px rgba(24, 24, 27, .12);
+}

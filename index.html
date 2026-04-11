@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ro">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Joacă Robble în limba română online gratuit. Antrenează-ți mintea cu cel mai popular joc de cuvinte împotriva AI-ului sau a prietenilor.">
+    <title>Robble - Joc de cuvinte</title>
+    <link rel="icon" type="image/png" href="/icon.png" />
+    <link rel="stylesheet" href="/src/styles/tooltips.css">
+    <link rel="preload" href="/icon.png" as="image">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,500,0,0" />
+    <style>
+        :root {
+            --bg: #fafafa;
+            --text: #18181b;
+            --text-muted: #71717a;
+            --accent: #18181b;
+            --gray-200: #e4e4e7
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Outfit', system-ui, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            overflow: hidden
+        }
+
+        #loading-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            height: 100dvh;
+            gap: 16px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            background-color: var(--bg);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 9999;
+            transition: opacity .5s ease-out, visibility .5s
+        }
+
+        #loading-screen.fade-out {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none
+        }
+
+        #app {
+            opacity: 1;
+            transition: opacity .5s ease-in
+        }
+
+        #app.hidden {
+            display: none !important;
+            opacity: 0
+        }
+
+        .loading-logo {
+            width: 140px;
+            height: 140px;
+            margin-bottom: 8px;
+            opacity: 0;
+            transform: scale(.7);
+            animation: popIn .6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid var(--gray-200);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin .8s linear infinite
+        }
+
+        .hidden {
+            display: none !important
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg)
+            }
+        }
+
+        @keyframes popIn {
+            to {
+                opacity: 1;
+                transform: scale(1)
+            }
+        }
+    </style>
+    <script>if (location.protocol === 'http:' && location.hostname !== 'localhost') location.replace(`https://${location.hostname}${location.pathname}${location.search}${location.hash}`);</script>
+</head>
+
+<body>
+    <div id="loading-screen">
+        <img src="/icon.png" class="loading-logo" alt="Robble Icon">
+        <div class="spinner"></div>
+        <p>Se încarcă dicționarul românesc...</p>
+        <p class="sub" id="load-status">Conectare...</p>
+    </div>
+    <div id="app" class="hidden">
+        <div id="top-bar">
+            <div class="left-actions">
+                <button id="btn-history" aria-label="Istoric" data-tooltip="Istoric"><span
+                        class="material-symbols-outlined">history</span></button>
+            </div>
+            <div id="info-badges">
+                <div class="tiles-info-group">
+                    <span class="material-symbols-outlined tiles-icon" aria-hidden="true">dashboard_customize</span>
+                    <div class="tile-stat" data-tooltip="Total piese rămase în sac"><span
+                            class="label">TOATE:</span><span id="remaining-count">100</span></div>
+                    <div class="tile-stat" data-tooltip="Piesele tale"><span class="label">TU:</span><span
+                            id="player-count">7</span></div>
+                    <div class="tile-stat" data-tooltip="Piese AI"><span class="label">AI:</span><span
+                            id="computer-count">7</span></div>
+                    <div style="width: 1px; height: 16px; background: var(--gray-200); margin: 0 2px;"></div>
+                    <span class="material-symbols-outlined tiles-icon" aria-hidden="true">speed</span>
+                    <div class="tile-stat" data-tooltip="Dificultate AI"><span class="label">DIF:</span><span
+                            id="current-difficulty-display">Mediu</span></div>
+                </div>
+            </div>
+            <div class="top-bar-actions">
+                <button id="btn-new-game" aria-label="Joc nou" data-tooltip="Joc nou"><span
+                        class="material-symbols-outlined">add</span></button>
+            </div>
+            <div class="scoreboard">
+                <div class="player-score active" id="player1-score"><span class="player-name">Tu</span><span
+                        class="score-value" id="p1-score">0</span></div>
+                <div class="turn-indicator" id="turn-indicator"></div>
+                <div class="player-score" id="player2-score"><span class="player-name">AI</span><span
+                        class="score-value" id="p2-score">0</span></div>
+            </div>
+        </div>
+        <div id="board-container">
+            <div id="board-assembly">
+                <div id="board"></div>
+                <div id="board-legend">
+                    <div class="legend-item blue">
+                        <div class="legend-shape circle"></div>
+                        <span>Literă</span>
+                    </div>
+                    <div class="legend-item red">
+                        <div class="legend-shape rect"></div>
+                        <span>Cuvânt</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="history-panel">
+            <div class="panel-header">
+                <span class="material-symbols-outlined">history</span>
+                <h3>Istoric</h3>
+                <button id="btn-close-history" aria-label="Închide" data-tooltip="Închide"><span
+                        class="material-symbols-outlined">close</span></button>
+            </div>
+            <div id="history-panel-content">
+                <div id="history-list"></div>
+            </div>
+        </div>
+        <div id="history-overlay"></div>
+        <div id="bottom-area">
+            <div id="message-area"></div>
+            <div id="player-rack" class="rack">
+                <div class="rack-tiles" id="player-tiles"></div>
+                <div class="rack-controls">
+                    <button id="btn-recall" aria-label="Retrage" data-tooltip="Retrage piesele de pe tablă"><span
+                            class="material-symbols-outlined">reply</span></button>
+                    <button id="btn-shuffle" aria-label="Amestecă" data-tooltip="Amestecă"><span
+                            class="material-symbols-outlined">shuffle</span></button>
+                    <button id="btn-submit" disabled>Plasează</button>
+                    <button id="btn-exchange" aria-label="Schimbă" data-tooltip="Schimbă"><span
+                            class="material-symbols-outlined">sync</span></button>
+                    <button id="btn-pass" aria-label="Pas" data-tooltip="Pas"><span
+                            class="material-symbols-outlined">skip_next</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="modal-overlay" class="hidden">
+        <div id="modal">
+            <h2 id="modal-title"></h2>
+            <p id="modal-message"></p>
+            <div id="difficulty-selector" class="custom-dropdown hidden">
+                <label>Dificultate:</label>
+                <button id="difficulty-trigger" class="dropdown-trigger" aria-haspopup="listbox" aria-expanded="false">
+                    <span id="difficulty-value" data-value="medium">Mediu</span>
+                    <span class="material-symbols-outlined dropdown-arrow">expand_more</span>
+                </button>
+                <div id="difficulty-menu" class="dropdown-menu hidden" role="listbox">
+                    <button class="dropdown-option" data-value="easy" role="option">Ușor</button>
+                    <button class="dropdown-option selected" data-value="medium" role="option">Mediu</button>
+                    <button class="dropdown-option" data-value="hard" role="option">Greu</button>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button id="modal-cancel-btn" class="secondary hidden">Anulează</button>
+                <button id="modal-btn">OK</button>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+</body>
+
+</html>

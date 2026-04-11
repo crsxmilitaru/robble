@@ -1,0 +1,346 @@
+@media(max-width:768px) {
+
+  html,
+  body {
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: auto
+  }
+
+  #app {
+    height: 100dvh;
+    min-height: 100dvh;
+    padding: 16px 8px;
+    gap: 24px
+  }
+
+  #top-bar {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 8px;
+    width: 100%
+  }
+
+  .scoreboard {
+    grid-column: 1 / -1;
+    justify-self: center;
+    margin: 4px 0 0;
+    order: 3;
+    height: 46px
+  }
+
+  .tile-stat .label,
+  #difficulty-selector label {
+    display: none
+  }
+
+  #btn-new-game {
+    padding: 10px;
+    height: 46px;
+    font-size: .65rem
+  }
+
+  .dropdown-trigger {
+    height: 46px;
+    padding: 10px;
+    font-size: .65rem
+  }
+
+  #btn-history {
+    height: 46px;
+    width: 46px
+  }
+
+  #btn-history .material-symbols-outlined {
+    font-size: 20px
+  }
+
+  #info-badges {
+    padding: 6px 8px;
+    height: 46px;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .tiles-info-group {
+    gap: 6px;
+  }
+
+  .tiles-icon {
+    font-size: 18px;
+  }
+
+  .player-score {
+    padding: 4px 10px
+  }
+
+  .score-value {
+    font-size: 1.15rem
+  }
+
+  .turn-indicator {
+    font-size: .55rem;
+    padding: 4px 8px
+  }
+
+  #board-container {
+    width: 100%;
+    flex: 1;
+    padding: 8px 4px;
+    max-height: calc(100dvh - 240px)
+  }
+
+  #board-assembly {
+    padding: 8px;
+    padding-bottom: 24px;
+    overflow: hidden
+  }
+
+  .cell {
+    font-size: .4rem
+  }
+
+  .cell.has-tile {
+    font-size: .7rem
+  }
+
+  .tile-on-board {
+    border-radius: 4px;
+  }
+
+  #bottom-area {
+    gap: 16px
+  }
+
+  #center-content {
+    gap: 8px
+  }
+
+  .rack {
+    padding: 16px 20px;
+    border-radius: var(--radius-lg)
+  }
+
+  .rack-tiles {
+    gap: 6px
+  }
+
+  .rack-tile {
+    width: 36px;
+    height: 38px;
+  }
+
+  .rack-tile:hover {
+    transform: translateY(-2px);
+  }
+
+  #modal,
+  .blank-tile-modal {
+    padding: 24px;
+    width: 92%
+  }
+
+  #modal h2 {
+    font-size: 1.2rem
+  }
+
+  .blank-tile-modal {
+    padding: 20px;
+    width: 95%
+  }
+
+  .blank-tile-grid {
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px
+  }
+
+  .blank-btn {
+    padding: 10px 4px;
+    font-size: .9rem
+  }
+
+  .exchange-grid {
+    gap: 8px
+  }
+
+  .exchange-btn {
+    width: 36px;
+    height: 40px;
+    font-size: 1rem
+  }
+}
+
+@media(max-width:480px) {
+  #app {
+    padding: 8px 4px;
+    gap: 12px
+  }
+
+  #top-bar {
+    gap: 4px
+  }
+
+  .scoreboard {
+    margin: 4px 0 0;
+    gap: 6px;
+    padding: 8px;
+    height: 40px
+  }
+
+  #btn-new-game {
+    padding: 8px;
+    height: 40px;
+    font-size: .55rem
+  }
+
+  .dropdown-trigger {
+    height: 40px;
+    padding: 8px;
+    font-size: .55rem
+  }
+
+  #btn-new-game .material-symbols-outlined {
+    font-size: 14px;
+    margin-right: 4px
+  }
+
+  #btn-history {
+    height: 40px;
+    width: 40px
+  }
+
+  #btn-history .material-symbols-outlined {
+    font-size: 18px
+  }
+
+  .player-score {
+    padding: 4px 8px
+  }
+
+  .player-name {
+    font-size: .55rem
+  }
+
+  .score-value {
+    font-size: 1rem
+  }
+
+  .turn-indicator {
+    font-size: .5rem;
+    padding: 2px 6px
+  }
+
+  #info-badges {
+    padding: 4px 6px;
+    height: 40px;
+    gap: 4px
+  }
+
+  .tiles-info-group {
+    gap: 4px;
+  }
+
+  .tiles-icon {
+    font-size: 16px;
+  }
+
+  .tile-stat {
+    font-size: 0.55rem;
+  }
+
+  #remaining-count,
+  #player-count,
+  #computer-count {
+    font-size: .55rem;
+    padding: 1px 4px;
+  }
+
+  #board-container {
+    padding: 4px 2px;
+    max-height: calc(100dvh - 220px)
+  }
+
+  #board-assembly {
+    padding: 4px;
+    padding-bottom: 20px;
+    border-radius: var(--radius-sm);
+    overflow: hidden
+  }
+
+  #board {
+    gap: .5px;
+    border-width: .5px
+  }
+
+  .rack {
+    padding: 12px 16px;
+    gap: 12px
+  }
+
+  .rack-tiles {
+    gap: 4px
+  }
+
+  .rack-tile {
+    width: clamp(32px, 11vw, 40px);
+    height: clamp(34px, 12vw, 42px)
+  }
+
+  .rack-controls {
+    gap: 12px
+  }
+
+  #btn-submit {
+    padding: 10px 20px;
+    font-size: .75rem
+  }
+
+  #btn-shuffle,
+  #btn-exchange,
+  #btn-pass,
+  #btn-recall {
+    width: 36px;
+    height: 36px
+  }
+
+  #btn-shuffle .material-symbols-outlined,
+  #btn-exchange .material-symbols-outlined,
+  #btn-pass .material-symbols-outlined,
+  #btn-recall .material-symbols-outlined {
+    font-size: 18px
+  }
+
+  #message-area {
+    font-size: .75rem;
+    padding: 6px 12px;
+    min-height: 36px
+  }
+
+  .exchange-grid {
+    gap: 6px
+  }
+
+  .exchange-btn {
+    width: 32px;
+    height: 36px;
+    font-size: .9rem
+  }
+}
+
+@media(min-width:1200px) {
+  .rack {
+    max-width: 800px
+  }
+
+  .rack-tile {
+    width: 48px;
+    height: 50px
+  }
+}
+
+@media(min-width:769px) and (max-width:1199px) {
+  .rack-tile {
+    width: 44px;
+    height: 46px
+  }
+}
