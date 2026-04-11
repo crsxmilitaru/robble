@@ -39,5 +39,5 @@ export const BONUS_LABELS: Partial<Record<BonusType, string>> = {
   [BONUS.DL]: '2\nLitera', [BONUS.TL]: '3\nLitera', [BONUS.DW]: '2\nCuvânt', [BONUS.TW]: '3\nCuvânt', [BONUS.CENTER]: '★'
 };
 
-export const DICT_URLS = ['/loc-reduse-6.0.txt'];
+export const DICT_URLS = [`${import.meta.env.BASE_URL}loc-reduse-6.0.txt`];
 export const ROMANIAN_LETTERS = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'l', 'm', 'n', 'o', 'p', 'r', 's', 't', 'u', 'v', 'x', 'z'];
