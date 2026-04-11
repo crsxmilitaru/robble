@@ -129,7 +129,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     game.showModal('Joc Nou', 'Alege dificultatea și începe un joc nou. Progresul curent va fi pierdut.', () => {
       const difficulty = getSelectedDifficulty();
       game.newGame(difficulty);
-    }, true);
+    }, null, true);
   });
 
   const historyPanel = document.getElementById('history-panel')!;

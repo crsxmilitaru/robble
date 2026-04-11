@@ -194,7 +194,7 @@ export class Game implements GameState {
     this.setMessage(`${wordList}: +${addedScore} puncte${isRobble ? ' (+50 bonus)' : ''}!`);
     soundManager.play(isRobble ? 'BINGO' : 'SUCCESS');
     this.history.push({ player: 'player', words: words.map(w => ({ word: w.word.toUpperCase(), score: w.score })), totalScore: addedScore, isRobble });
-    this.placedThisTurn = []; this.firstMove = false; this.consecutivePasses = 0; this.refillRack(this.playerRack); this.isPlayerTurn = false;
+    this.placedThisTurn = []; this.firstMove = false; this.consecutivePasses = 0; this.refillRack(this.playerRack); this.selectedTileIndex = -1; this.isPlayerTurn = false;
     this.render(); this.saveGame();
     if (this.checkGameEnd()) return;
     setTimeout(() => this.computerTurn(), 800);
@@ -250,11 +250,11 @@ export class Game implements GameState {
     if (this.playerScore > this.computerScore) { title = 'Felicitări! Ai câștigat!'; message = `Scor final: Tu ${this.playerScore} - Calculator ${this.computerScore}`; }
     else if (this.computerScore > this.playerScore) { title = 'Calculatorul a câștigat!'; message = `Scor final: Tu ${this.playerScore} - Calculator ${this.computerScore}`; }
     else { title = 'Egalitate!'; message = `Scor final: ${this.playerScore} - ${this.computerScore}`; }
-    this.showModal(title, message);
+    this.showModal(title, message, () => this.newGame(), () => { this.setMessage('Jocul s-a terminat.'); }, false, 'Joc nou', 'Vezi tabla');
   }
 
-  showModal(title: string, message: string, onConfirm: (() => void) | null = null, showDifficulty: boolean = false): void {
-    soundManager.play('CLICK'); showModal(title, message, onConfirm ?? undefined, undefined, showDifficulty);
+  showModal(title: string, message: string, onConfirm: (() => void) | null = null, onCancel?: (() => void) | null, showDifficulty: boolean = false, confirmText?: string, cancelText?: string): void {
+    soundManager.play('CLICK'); showModal(title, message, onConfirm ?? undefined, onCancel ?? undefined, showDifficulty, confirmText, cancelText);
   }
 
   newGame(newDifficulty?: DifficultyLevel): void {
@@ -270,7 +270,7 @@ export class Game implements GameState {
 
   shuffleRack(): void {
     if (this.gameOver) return;
-    this.shuffle(this.playerRack); soundManager.play('SHUFFLE');
+    this.shuffle(this.playerRack); this.selectedTileIndex = -1; soundManager.play('SHUFFLE');
     this.rackRenderer.updateRack(this.playerRack, this.selectedTileIndex); this.rackRenderer.render();
   }
 

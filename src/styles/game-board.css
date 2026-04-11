@@ -199,6 +199,12 @@
   box-shadow: var(--tile-shadow-selected);
   transform: translateY(-4px) scale(1.03);
   animation: tile-land 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  cursor: pointer;
+}
+
+.cell.placed-this-turn .tile-on-board:hover {
+  transform: translateY(-6px) scale(1.05);
+  box-shadow: var(--tile-shadow-selected);
 }
 
 @keyframes tile-land {
@@ -207,7 +213,7 @@
 }
 
 #board.has-selection .cell.placed-this-turn .tile-on-board {
-  cursor: grab
+  cursor: pointer
 }
 
 .cell.selected-from-rack {
@@ -263,4 +269,4 @@
 
 .legend-shape.rect {
   border-radius: 3px;
-}
+}

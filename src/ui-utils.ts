@@ -8,7 +8,7 @@ export function promptBlankTileLetter(callback: (letter: string) => void): void 
   overlay.querySelectorAll<HTMLButtonElement>('.blank-btn').forEach(btn => btn.addEventListener('click', () => { document.body.removeChild(overlay); callback(btn.dataset.letter!); }));
 }
 
-export function showModal(title: string, message: string, onConfirm?: () => void, onCancel?: () => void, showDifficulty: boolean = false): () => void {
+export function showModal(title: string, message: string, onConfirm?: () => void, onCancel?: () => void, showDifficulty: boolean = false, confirmText?: string, cancelText?: string): () => void {
   const modalOverlay = document.getElementById('modal-overlay')!, modalBtn = document.getElementById('modal-btn')!, cancelBtn = document.getElementById('modal-cancel-btn')!;
   const difficultySelector = document.getElementById('difficulty-selector')!;
   document.getElementById('modal-title')!.textContent = title;
@@ -24,10 +24,11 @@ export function showModal(title: string, message: string, onConfirm?: () => void
     modalOverlay.classList.add('hidden');
     difficultySelector.classList.add('hidden');
   };
-  modalBtn.textContent = onConfirm ? 'Confirmă' : 'OK';
+  modalBtn.textContent = confirmText ?? (onConfirm ? 'Confirmă' : 'OK');
   if (onConfirm) {
     cancelBtn.classList.remove('hidden');
     const newModalBtn = modalBtn.cloneNode(true) as HTMLElement, newCancelBtn = cancelBtn.cloneNode(true) as HTMLElement;
+    if (cancelText) newCancelBtn.textContent = cancelText;
     modalBtn.parentNode!.replaceChild(newModalBtn, modalBtn); cancelBtn.parentNode!.replaceChild(newCancelBtn, cancelBtn);
     newModalBtn.addEventListener('click', () => { onConfirm(); cleanup(); });
     newCancelBtn.addEventListener('click', () => { if (onCancel) onCancel(); cleanup(); });
