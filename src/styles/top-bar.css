@@ -216,6 +216,38 @@
   font-size: 22px
 }
 
+#btn-mute {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, .8);
+  backdrop-filter: blur(24px);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  padding: 0;
+  height: 48px;
+  width: 48px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: all .2s;
+  box-shadow: var(--shadow-md);
+  flex-shrink: 0
+}
+
+#btn-mute:hover {
+  background: var(--text);
+  color: var(--white)
+}
+
+#btn-mute .material-symbols-outlined {
+  font-size: 22px
+}
+
+#btn-mute.muted {
+  background: var(--text);
+  color: var(--white)
+}
+
 #difficulty-selector {
   display: flex;
   align-items: center;

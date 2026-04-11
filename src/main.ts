@@ -11,6 +11,7 @@ import './styles/variables.css';
 import type { DifficultyLevel } from './types';
 import { initTooltips } from './ui-utils';
 import { initPWAInstall } from './pwa-install';
+import { soundManager } from './sounds';
 
 let game: Game;
 
@@ -74,6 +75,22 @@ function initCustomDropdown(): void {
   });
 }
 
+function initMuteButton(): void {
+  const btn = document.getElementById('btn-mute')!;
+  const icon = btn.querySelector('.material-symbols-outlined')!;
+  const update = () => {
+    const muted = soundManager.isMuted();
+    icon.textContent = muted ? 'volume_off' : 'volume_up';
+    btn.setAttribute('aria-label', muted ? 'Activează sunetul' : 'Dezactivează sunetul');
+    btn.classList.toggle('muted', muted);
+  };
+  update();
+  btn.addEventListener('click', () => {
+    soundManager.toggleMute();
+    update();
+  });
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   const loaded = await loadDictionary();
   if (!loaded) {
@@ -94,6 +111,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   initCustomDropdown();
   initTooltips();
   initPWAInstall();
+  initMuteButton();
 
   const initialDifficulty = getSelectedDifficulty();
   game = new Game(initialDifficulty);

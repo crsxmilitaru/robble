@@ -55,6 +55,15 @@
     font-size: 20px
   }
 
+  #btn-mute {
+    height: 46px;
+    width: 46px
+  }
+
+  #btn-mute .material-symbols-outlined {
+    font-size: 20px
+  }
+
   #info-badges {
     padding: 6px 8px;
     height: 46px;
@@ -210,6 +219,15 @@
   }
 
   #btn-history .material-symbols-outlined {
+    font-size: 18px
+  }
+
+  #btn-mute {
+    height: 40px;
+    width: 40px
+  }
+
+  #btn-mute .material-symbols-outlined {
     font-size: 18px
   }
 
