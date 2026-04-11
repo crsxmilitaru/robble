@@ -1,0 +1,31 @@
+{
+  "name": "Robble - Joc de cuvinte",
+  "short_name": "Robble",
+  "description": "Joacă Robble în limba română online gratuit. Antrenează-ți mintea cu cel mai popular joc de cuvinte împotriva AI-ului.",
+  "start_url": "/robble/",
+  "scope": "/robble/",
+  "display": "standalone",
+  "background_color": "#fafafa",
+  "theme_color": "#18181b",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/robble/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/robble/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/robble/icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

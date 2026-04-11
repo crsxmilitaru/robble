@@ -10,6 +10,7 @@ import './styles/top-bar.css';
 import './styles/variables.css';
 import type { DifficultyLevel } from './types';
 import { initTooltips } from './ui-utils';
+import { initPWAInstall } from './pwa-install';
 
 let game: Game;
 
@@ -92,6 +93,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   initCustomDropdown();
   initTooltips();
+  initPWAInstall();
 
   const initialDifficulty = getSelectedDifficulty();
   game = new Game(initialDifficulty);
