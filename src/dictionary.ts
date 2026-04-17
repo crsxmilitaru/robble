@@ -1,5 +1,6 @@
 import { DICT_URLS } from './constants';
 import { normalizeRomanianWord } from './dictionary-utils';
+import { showToast } from './ui-utils';
 
 export { normalizeRomanianWord };
 
@@ -62,7 +63,7 @@ export async function loadDictionary(): Promise<boolean> {
           resolve(count > 10000);
           break;
         case 'error':
-          console.error('Worker error:', error);
+          showToast(`Eroare Worker: ${error.toString()}`, 'error');
           unsub();
           resolve(false);
           break;
@@ -71,3 +72,46 @@ export async function loadDictionary(): Promise<boolean> {
     worker.postMessage({ type: 'load', urls: DICT_URLS, requestId });
   });
 }
+
+export interface Definition {
+  htmlRep: string;
+  sourceName: string;
+}
+
+export interface WordInfo {
+  lemma: string;
+  definitions: Definition[];
+}
+
+interface DexonlineDefinition {
+  htmlRep: string;
+  sourceName: string;
+}
+
+interface DexonlineResponse {
+  type: string;
+  word: string;
+  definitions: DexonlineDefinition[];
+}
+
+export async function fetchDefinition(word: string): Promise<WordInfo | null> {
+  const normalized = normalizeRomanianWord(word).toLowerCase();
+  try {
+    const response = await fetch(`https://dexonline.ro/definitie/${normalized}/json`);
+    if (!response.ok) return null;
+    const data: DexonlineResponse = await response.json();
+    if (data.type === 'searchResults' && data.definitions) {
+      return {
+        lemma: data.word,
+        definitions: data.definitions.map((d: DexonlineDefinition) => ({
+          htmlRep: d.htmlRep,
+          sourceName: d.sourceName
+        }))
+      };
+    }
+  } catch {
+    showToast('Eroare la preluarea definiției.', 'error');
+  }
+  return null;
+}
+

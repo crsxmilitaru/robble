@@ -28,7 +28,6 @@ self.onmessage = async (e: MessageEvent) => {
         self.postMessage({ type: 'complete', count: dictionary.size, requestId });
         return;
       } catch (e) {
-        console.error('Worker error:', e);
         self.postMessage({ type: 'error', error: String(e), requestId });
       }
     }

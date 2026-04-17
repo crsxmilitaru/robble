@@ -1,3 +1,5 @@
+import { showToast } from './ui-utils';
+
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[];
   readonly userChoice: Promise<{
@@ -24,8 +26,8 @@ export function initPWAInstall(): void {
 
   if (import.meta.env.PROD && 'serviceWorker' in navigator) {
     const swPath = import.meta.env.BASE_URL + 'sw.js';
-    navigator.serviceWorker.register(swPath).catch((err) => {
-      console.error('SW registration failed:', err);
+    navigator.serviceWorker.register(swPath).catch(() => {
+      showToast('Eroare la activarea modului offline.', 'error');
     });
   } else if (!import.meta.env.PROD && 'serviceWorker' in navigator) {
     navigator.serviceWorker.getRegistrations().then((regs) => {

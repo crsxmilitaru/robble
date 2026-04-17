@@ -140,11 +140,87 @@ export function initTooltips(): void {
   };
 
   updateTooltips();
-
-  // Also hide tooltip when clicking anywhere else
   document.addEventListener('mousedown', hideTooltip);
   document.addEventListener('touchstart', hideTooltip, { passive: true });
 
   const observer = new MutationObserver(updateTooltips);
   observer.observe(document.body, { childList: true, subtree: true });
+}
+
+export function showDefinitionDialog(word: string, info: { lemma: string, definitions: { htmlRep: string, sourceName: string }[] } | null): void {
+  const overlay = document.createElement('div');
+  overlay.className = 'blank-tile-overlay definition-overlay';
+
+  let contentHtml = '';
+  let headerExtra = '';
+
+  if (!info || info.definitions.length === 0) {
+    contentHtml = `<p class="no-def">Nu s-au găsit definiții pentru "<strong>${word}</strong>".</p>`;
+  } else {
+    const firstDef = info.definitions[0].htmlRep;
+    const typeMatch = firstDef.match(/<abbr[^>]*>(.*?)<\/abbr>/);
+    const wordType = typeMatch ? typeMatch[1] : '';
+
+    if (wordType) {
+      headerExtra = `<span class="word-type">${wordType}</span>`;
+    }
+
+    if (info.lemma && info.lemma.toLowerCase() !== word.toLowerCase()) {
+      headerExtra += `<span class="word-lemma"> forma lui <strong>${info.lemma}</strong></span>`;
+    }
+
+    contentHtml = info.definitions.map(d => `
+      <div class="definition-item">
+        <div class="definition-html">${d.htmlRep}</div>
+        <div class="definition-source">${d.sourceName}</div>
+      </div>
+    `).join('<hr>');
+  }
+
+  overlay.innerHTML = `
+    <div class="blank-tile-modal definition-modal">
+      <div class="modal-header">
+        <div class="header-title-group">
+          <h3>${word}</h3>
+          ${headerExtra}
+        </div>
+        <button class="close-def-btn"><span class="material-symbols-outlined">close</span></button>
+      </div>
+      <div class="definition-scroll-area">
+        ${contentHtml}
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+
+  const closeBtn = overlay.querySelector('.close-def-btn')!;
+  const close = () => {
+    overlay.classList.add('fade-out');
+    setTimeout(() => {
+      if (overlay.parentNode) document.body.removeChild(overlay);
+    }, 200);
+  };
+
+  closeBtn.addEventListener('click', close);
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) close();
+  });
+}
+
+export function showToast(message: string, type: 'info' | 'error' = 'info'): void {
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.innerHTML = `
+    <span class="material-symbols-outlined">${type === 'error' ? 'error' : 'info'}</span>
+    <span>${message}</span>
+  `;
+  document.body.appendChild(toast);
+
+  setTimeout(() => {
+    toast.classList.add('fade-out');
+    setTimeout(() => {
+      if (toast.parentNode) document.body.removeChild(toast);
+    }, 300);
+  }, 3000);
 }
