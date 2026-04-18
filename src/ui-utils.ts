@@ -57,7 +57,32 @@ export function createExchangeDialog(rackLetters: string[], onConfirm: (indices:
   cancelBtn.addEventListener('click', () => { document.body.removeChild(overlay); onCancel(); });
 }
 
-export function setMessage(msg: string): void { document.getElementById('message-area')!.textContent = msg; }
+export function setMessage(msg: string, score?: string, status?: { text: string; type: 'valid' | 'invalid' | 'checking' | '' }): void {
+  const card = document.getElementById('game-info-card');
+  const mainEl = document.getElementById('game-info-main');
+  const scoreEl = document.getElementById('game-info-score');
+  const statusEl = document.getElementById('game-info-status');
+
+  if (!card || !mainEl || !scoreEl || !statusEl) return;
+
+  mainEl.textContent = msg;
+
+  if (score) {
+    scoreEl.textContent = score;
+    scoreEl.classList.remove('hidden');
+  } else {
+    scoreEl.classList.add('hidden');
+    scoreEl.textContent = '';
+  }
+
+  if (status && status.text) {
+    statusEl.textContent = status.text;
+    statusEl.className = 'info-status ' + status.type;
+  } else {
+    statusEl.textContent = '';
+    statusEl.className = 'info-status';
+  }
+}
 export function updateScores(playerScore: number, computerScore: number, isPlayerTurn: boolean): void {
   document.getElementById('p1-score')!.textContent = String(playerScore);
   document.getElementById('p2-score')!.textContent = String(computerScore);

@@ -17,7 +17,7 @@
 #board-assembly {
   background: var(--board-outer);
   padding: clamp(8px, 1.5vmin, 12px);
-  padding-bottom: clamp(22px, 4.5vmin, 38px);
+  padding-bottom: clamp(48px, 8vmin, 72px);
   border-radius: var(--radius-md);
   display: flex;
   box-shadow: var(--shadow-lg);
@@ -25,10 +25,10 @@
   height: 100cqmin;
   max-width: 800px;
   max-height: 800px;
-  overflow: hidden;
+  overflow: visible;
   box-sizing: border-box;
   border: 1px solid var(--border);
-  box-shadow: var(--shadow-lg), inset 0 2px 12px rgba(0,0,0,0.03);
+  box-shadow: var(--shadow-lg), inset 0 2px 12px rgba(0, 0, 0, 0.03);
   backdrop-filter: blur(8px);
   position: relative;
 }
@@ -79,7 +79,8 @@
   justify-content: center;
   width: 100%;
   height: 100%;
-  opacity: 0.5; /* More subtle */
+  opacity: 0.5;
+  /* More subtle */
 }
 
 .cell .bonus-label .mult {
@@ -114,27 +115,32 @@
 
 .cell.dl {
   background: var(--dl-color);
-  color: #1e3a8a /* Blue 900 */
+  color: #1e3a8a
+    /* Blue 900 */
 }
 
 .cell.tl {
   background: var(--tl-color);
-  color: #1e40af /* Blue 800 */
+  color: #1e40af
+    /* Blue 800 */
 }
 
 .cell.dw {
   background: var(--dw-color);
-  color: #831843 /* Pink 900 */
+  color: #831843
+    /* Pink 900 */
 }
 
 .cell.tw {
   background: var(--tw-color);
-  color: #991b1b /* Red 800 */
+  color: #991b1b
+    /* Red 800 */
 }
 
 .cell.center {
   background: var(--center-color);
-  color: #854d0e /* Yellow 900 */
+  color: #854d0e
+    /* Yellow 900 */
 }
 
 .cell.center .bonus-label {
@@ -208,8 +214,15 @@
 }
 
 @keyframes tile-land {
-  0% { transform: translateY(-20px) scale(1.2); opacity: 0; }
-  100% { transform: translateY(-4px) scale(1.03); opacity: 1; }
+  0% {
+    transform: translateY(-20px) scale(1.2);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateY(-4px) scale(1.03);
+    opacity: 1;
+  }
 }
 
 #board.has-selection .cell.placed-this-turn .tile-on-board {
@@ -249,7 +262,7 @@
   letter-spacing: 0.05em;
   color: var(--zinc-500);
   white-space: nowrap;
-  opacity: 0.6; /* Matches subtle theme */
+  opacity: 0.6;
 }
 
 .legend-item.blue,
@@ -269,4 +282,151 @@
 
 .legend-shape.rect {
   border-radius: 3px;
+}
+
+/* Unified Game Info Card */
+#game-info-card {
+  position: absolute;
+  bottom: clamp(6px, 1.2vmin, 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  background: var(--tile-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 4px 12px;
+  box-shadow: var(--shadow-sm);
+  font-size: clamp(0.7rem, 1.6vmin, 0.85rem);
+  font-weight: 600;
+  color: var(--text);
+  min-width: min(180px, 45%);
+  max-width: min(360px, 80%);
+  transition: all 0.2s ease;
+  animation: slideIn 0.2s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+#game-info-content {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 4px 8px;
+  line-height: 1.2;
+  text-align: center;
+}
+
+#game-info-main {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.info-score {
+  font-weight: 700;
+  color: var(--accent);
+  background: var(--gray-100);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 0.9em;
+  white-space: nowrap;
+}
+
+.info-score.hidden {
+  display: none !important;
+}
+
+.info-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.85em;
+  font-weight: 500;
+  width: 100%;
+  justify-content: center;
+  padding-top: 2px;
+  border-top: 1px solid var(--gray-200);
+  margin-top: 1px;
+}
+
+.info-status:empty {
+  display: none;
+  padding-top: 0;
+  border-top: none;
+  margin-top: 0;
+}
+
+.info-status.valid {
+  color: #16a34a;
+}
+
+.info-status.invalid {
+  color: #dc2626;
+}
+
+.info-status.checking {
+  color: var(--text-muted);
+}
+
+.info-status.valid::before {
+  content: '✓';
+  font-weight: 700;
+}
+
+.info-status.invalid::before {
+  content: '✗';
+  font-weight: 700;
+}
+
+.info-status.checking::before {
+  content: '○';
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Mobile adjustments */
+@media (max-width: 640px) {
+  #game-info-card {
+    padding: 4px 10px;
+    font-size: 0.7rem;
+    bottom: 4px;
+    max-width: 90%;
+  }
+
+  #game-info-content {
+    gap: 3px 6px;
+    line-height: 1.15;
+  }
+
+  .info-score {
+    padding: 1px 5px;
+    font-size: 0.85em;
+  }
+
+  .info-status {
+    font-size: 0.8em;
+    padding-top: 2px;
+    margin-top: 1px;
+  }
 }

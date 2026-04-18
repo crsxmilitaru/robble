@@ -123,6 +123,7 @@ export class Game implements GameState {
         this.board[row][col] = { letter: ' ', points: 0, isBlank: true, assignedLetter: chosenLetter.toUpperCase() };
         this.placedThisTurn.push({ row, col, tile, assignedLetter: chosenLetter.toUpperCase() });
         this.selectedTileIndex = -1; this.render(); updateSubmitButton(this.placedThisTurn.length > 0);
+        this.updateScorePreview();
       });
       return;
     }
@@ -130,6 +131,7 @@ export class Game implements GameState {
     this.board[row][col] = { letter: tile.letter, points: tile.points, isBlank: false };
     this.placedThisTurn.push({ row, col, tile });
     this.selectedTileIndex = -1; soundManager.play('PLACE'); this.render(); updateSubmitButton(this.placedThisTurn.length > 0);
+    this.updateScorePreview();
   }
 
   private returnTileToRack(row: number, col: number): void {
@@ -139,11 +141,13 @@ export class Game implements GameState {
     this.playerRack.push(placed.tile);
     this.board[row][col] = null;
     this.selectedTileIndex = -1; soundManager.play('PICKUP'); this.render(); updateSubmitButton(this.placedThisTurn.length > 0);
+    this.updateScorePreview();
   }
 
   recallTiles(): void {
     this.placedThisTurn.forEach(p => { this.board[p.row][p.col] = null; this.playerRack.push(p.tile); });
     this.placedThisTurn = []; this.selectedTileIndex = -1; this.render(); updateSubmitButton(false);
+    this.hideScorePreview();
   }
 
   private validatePlacement(): ValidationResult {
@@ -195,7 +199,9 @@ export class Game implements GameState {
     soundManager.play(isRobble ? 'BINGO' : 'SUCCESS');
     this.history.push({ player: 'player', words: words.map(w => ({ word: w.word.toUpperCase(), score: w.score })), totalScore: addedScore, isRobble });
     this.placedThisTurn = []; this.firstMove = false; this.consecutivePasses = 0; this.refillRack(this.playerRack); this.selectedTileIndex = -1; this.isPlayerTurn = false;
-    this.render(); this.saveGame();
+    this.render();
+    this.saveGame();
+    this.hideScorePreview();
     if (this.checkGameEnd()) return;
     setTimeout(() => this.computerTurn(), 800);
   }
@@ -266,6 +272,7 @@ export class Game implements GameState {
     this.rackRenderer.updateRack(this.playerRack, this.selectedTileIndex);
     this.initBag(); this.dealInitialTiles(); this.render(); this.saveGame();
     this.setMessage('Joc nou! Plasează piesele pe tablă.'); updateSubmitButton(false);
+    this.hideScorePreview();
   }
 
   shuffleRack(): void {
@@ -295,6 +302,52 @@ export class Game implements GameState {
 
   private setMessage(msg: string): void { setMessage(msg); }
   private updateScores(): void { updateScoreDisplay(this.playerScore, this.computerScore, this.isPlayerTurn); }
+
+  private async updateScorePreview(): Promise<void> {
+    if (this.placedThisTurn.length === 0) {
+      this.hideScorePreview();
+      return;
+    }
+
+    const validation = this.validatePlacement();
+    if (!validation.valid) {
+      setMessage('', undefined, { text: validation.error || 'Plasare invalidă', type: 'invalid' });
+      return;
+    }
+
+    const { words, total } = computeMove(this.board, this.placedThisTurn);
+
+    if (words.length === 0) {
+      setMessage('', undefined, { text: 'Niciun cuvânt format', type: 'invalid' });
+      return;
+    }
+
+    const wordList = words.map(w => w.word.toUpperCase()).join(', ');
+    const isRobble = this.placedThisTurn.length === 7;
+    const displayScore = isRobble ? total + 50 : total;
+    const scoreText = `${displayScore} puncte${isRobble ? ' (+50 bonus)' : ''}`;
+
+    setMessage(wordList, scoreText, { text: 'Se verifică...', type: 'checking' });
+
+    try {
+      const validationResults = await Promise.all(
+        words.map(async w => ({ word: w.word, valid: await isValidWord(w.word) }))
+      );
+      const invalidWords = validationResults.filter(r => !r.valid);
+
+      if (invalidWords.length > 0) {
+        setMessage(wordList, scoreText, { text: `Cuvinte necunoscute: ${invalidWords.map(w => w.word.toUpperCase()).join(', ')}`, type: 'invalid' });
+      } else {
+        setMessage(wordList, scoreText, { text: 'Toate cuvintele sunt valide', type: 'valid' });
+      }
+    } catch {
+      setMessage(wordList, scoreText, { text: 'Verificare indisponibilă', type: '' });
+    }
+  }
+
+  private hideScorePreview(): void {
+    setMessage('Plasează piesele pe tablă pentru a forma un cuvânt!');
+  }
 
   private saveGame(): void {
     const data: SavedGameData = {
