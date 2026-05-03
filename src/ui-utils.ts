@@ -1,16 +1,48 @@
 import { ROMANIAN_LETTERS } from './constants';
 
+type MessageStatus = {
+  text: string;
+  type: 'valid' | 'invalid' | 'checking' | '';
+};
+
 export function promptBlankTileLetter(callback: (letter: string) => void): void {
   const overlay = document.createElement('div');
   overlay.className = 'blank-tile-overlay';
-  overlay.innerHTML = `<div class="blank-tile-modal"><h3>Alege litera pentru Joker</h3><div class="blank-tile-grid">${ROMANIAN_LETTERS.map(l => `<button class="blank-btn" data-letter="${l}">${l.toUpperCase()}</button>`).join('')}</div></div>`;
+  overlay.innerHTML = `
+    <div class="blank-tile-modal">
+      <h3>Alege litera pentru Joker</h3>
+      <div class="blank-tile-grid">
+        ${ROMANIAN_LETTERS.map((letter) => (
+          `<button class="blank-btn" data-letter="${letter}">${letter.toUpperCase()}</button>`
+        )).join('')}
+      </div>
+    </div>
+  `;
+
   document.body.appendChild(overlay);
-  overlay.querySelectorAll<HTMLButtonElement>('.blank-btn').forEach(btn => btn.addEventListener('click', () => { document.body.removeChild(overlay); callback(btn.dataset.letter!); }));
+
+  overlay.querySelectorAll<HTMLButtonElement>('.blank-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      document.body.removeChild(overlay);
+      callback(btn.dataset.letter!);
+    });
+  });
 }
 
-export function showModal(title: string, message: string, onConfirm?: () => void, onCancel?: () => void, showDifficulty: boolean = false, confirmText?: string, cancelText?: string): () => void {
-  const modalOverlay = document.getElementById('modal-overlay')!, modalBtn = document.getElementById('modal-btn')!, cancelBtn = document.getElementById('modal-cancel-btn')!;
+export function showModal(
+  title: string,
+  message: string,
+  onConfirm?: () => void,
+  onCancel?: () => void,
+  showDifficulty: boolean = false,
+  confirmText?: string,
+  cancelText?: string
+): () => void {
+  const modalOverlay = document.getElementById('modal-overlay')!;
+  const modalBtn = document.getElementById('modal-btn')!;
+  const cancelBtn = document.getElementById('modal-cancel-btn')!;
   const difficultySelector = document.getElementById('difficulty-selector')!;
+
   document.getElementById('modal-title')!.textContent = title;
   document.getElementById('modal-message')!.textContent = message;
 
@@ -24,46 +56,108 @@ export function showModal(title: string, message: string, onConfirm?: () => void
     modalOverlay.classList.add('hidden');
     difficultySelector.classList.add('hidden');
   };
+
   modalBtn.textContent = confirmText ?? (onConfirm ? 'Confirmă' : 'OK');
+
   if (onConfirm) {
     cancelBtn.classList.remove('hidden');
-    const newModalBtn = modalBtn.cloneNode(true) as HTMLElement, newCancelBtn = cancelBtn.cloneNode(true) as HTMLElement;
-    if (cancelText) newCancelBtn.textContent = cancelText;
-    modalBtn.parentNode!.replaceChild(newModalBtn, modalBtn); cancelBtn.parentNode!.replaceChild(newCancelBtn, cancelBtn);
-    newModalBtn.addEventListener('click', () => { onConfirm(); cleanup(); });
-    newCancelBtn.addEventListener('click', () => { if (onCancel) onCancel(); cleanup(); });
+    const newModalBtn = modalBtn.cloneNode(true) as HTMLElement;
+    const newCancelBtn = cancelBtn.cloneNode(true) as HTMLElement;
+
+    if (cancelText) {
+      newCancelBtn.textContent = cancelText;
+    }
+
+    modalBtn.parentNode!.replaceChild(newModalBtn, modalBtn);
+    cancelBtn.parentNode!.replaceChild(newCancelBtn, cancelBtn);
+
+    newModalBtn.addEventListener('click', () => {
+      onConfirm();
+      cleanup();
+    });
+
+    newCancelBtn.addEventListener('click', () => {
+      if (onCancel) {
+        onCancel();
+      }
+
+      cleanup();
+    });
   } else {
     cancelBtn.classList.add('hidden');
     const newModalBtn = modalBtn.cloneNode(true) as HTMLElement;
     modalBtn.parentNode!.replaceChild(newModalBtn, modalBtn);
     newModalBtn.addEventListener('click', cleanup);
   }
+
   modalOverlay.classList.remove('hidden');
   return cleanup;
 }
 
-export function createExchangeDialog(rackLetters: string[], onConfirm: (indices: number[]) => void, onCancel: () => void): void {
-  const selectedIndices: number[] = [], overlay = document.createElement('div');
+export function createExchangeDialog(
+  rackLetters: string[],
+  onConfirm: (indices: number[]) => void,
+  onCancel: () => void
+): void {
+  const selectedIndices: number[] = [];
+  const overlay = document.createElement('div');
+
   overlay.className = 'blank-tile-overlay';
-  overlay.innerHTML = `<div class="blank-tile-modal exchange-modal"><h3>Alege piesele pentru schimb</h3><p>Selectează literele pe care vrei să le înlocuiești:</p><div class="exchange-grid">${rackLetters.map((l, i) => `<button class="exchange-btn" data-idx="${i}">${l}</button>`).join('')}</div><div class="modal-actions"><button id="exchange-cancel" class="secondary">Anulează</button><button id="exchange-confirm" disabled>Confirmă</button></div></div>`;
+  overlay.innerHTML = `
+    <div class="blank-tile-modal exchange-modal">
+      <h3>Alege piesele pentru schimb</h3>
+      <p>Selectează literele pe care vrei să le înlocuiești:</p>
+      <div class="exchange-grid">
+        ${rackLetters.map((letter, index) => (
+          `<button class="exchange-btn" data-idx="${index}">${letter}</button>`
+        )).join('')}
+      </div>
+      <div class="modal-actions">
+        <button id="exchange-cancel" class="secondary">Anulează</button>
+        <button id="exchange-confirm" disabled>Confirmă</button>
+      </div>
+    </div>
+  `;
+
   document.body.appendChild(overlay);
-  const confirmBtn = overlay.querySelector('#exchange-confirm') as HTMLButtonElement, cancelBtn = overlay.querySelector('#exchange-cancel') as HTMLButtonElement;
-  overlay.querySelectorAll('.exchange-btn').forEach(btn => btn.addEventListener('click', () => {
-    const idx = parseInt((btn as HTMLElement).dataset.idx!), pos = selectedIndices.indexOf(idx);
-    if (pos === -1) { selectedIndices.push(idx); btn.classList.add('selected'); } else { selectedIndices.splice(pos, 1); btn.classList.remove('selected'); }
+
+  const confirmBtn = overlay.querySelector('#exchange-confirm') as HTMLButtonElement;
+  const cancelBtn = overlay.querySelector('#exchange-cancel') as HTMLButtonElement;
+
+  overlay.querySelectorAll('.exchange-btn').forEach((btn) => btn.addEventListener('click', () => {
+    const idx = parseInt((btn as HTMLElement).dataset.idx!);
+    const pos = selectedIndices.indexOf(idx);
+
+    if (pos === -1) {
+      selectedIndices.push(idx);
+      btn.classList.add('selected');
+    } else {
+      selectedIndices.splice(pos, 1);
+      btn.classList.remove('selected');
+    }
+
     confirmBtn.disabled = selectedIndices.length === 0;
   }));
-  confirmBtn.addEventListener('click', () => { document.body.removeChild(overlay); onConfirm(selectedIndices); });
-  cancelBtn.addEventListener('click', () => { document.body.removeChild(overlay); onCancel(); });
+
+  confirmBtn.addEventListener('click', () => {
+    document.body.removeChild(overlay);
+    onConfirm(selectedIndices);
+  });
+
+  cancelBtn.addEventListener('click', () => {
+    document.body.removeChild(overlay);
+    onCancel();
+  });
 }
 
-export function setMessage(msg: string, score?: string, status?: { text: string; type: 'valid' | 'invalid' | 'checking' | '' }): void {
-  const card = document.getElementById('game-info-card');
+export function setMessage(msg: string, score?: string, status?: MessageStatus): void {
   const mainEl = document.getElementById('game-info-main');
   const scoreEl = document.getElementById('game-info-score');
   const statusEl = document.getElementById('game-info-status');
 
-  if (!card || !mainEl || !scoreEl || !statusEl) return;
+  if (!mainEl || !scoreEl || !statusEl) {
+    return;
+  }
 
   mainEl.textContent = msg;
 
@@ -83,6 +177,7 @@ export function setMessage(msg: string, score?: string, status?: { text: string;
     statusEl.className = 'info-status';
   }
 }
+
 export function updateScores(playerScore: number, computerScore: number, isPlayerTurn: boolean): void {
   document.getElementById('p1-score')!.textContent = String(playerScore);
   document.getElementById('p2-score')!.textContent = String(computerScore);
@@ -92,22 +187,45 @@ export function updateScores(playerScore: number, computerScore: number, isPlaye
 }
 
 export function updateTileCounts(bagCount: number, playerCount: number, computerCount: number): void {
-  const r = document.getElementById('remaining-count'), p = document.getElementById('player-count'), c = document.getElementById('computer-count');
+  const r = document.getElementById('remaining-count');
+  const p = document.getElementById('player-count');
+  const c = document.getElementById('computer-count');
   const combined = document.getElementById('rack-counts-combined');
-  if (r) r.textContent = String(bagCount); if (p) p.textContent = String(playerCount); if (c) c.textContent = String(computerCount);
-  if (combined) combined.textContent = `${playerCount}/${computerCount}`;
-}
 
-export function updateDifficultyDisplay(difficulty: string): void {
-  const d = document.getElementById('current-difficulty-display');
-  if (d) {
-    if (difficulty === 'easy') d.textContent = 'Ușor';
-    else if (difficulty === 'hard') d.textContent = 'Greu';
-    else d.textContent = 'Mediu';
+  if (r) {
+    r.textContent = String(bagCount);
+  }
+
+  if (p) {
+    p.textContent = String(playerCount);
+  }
+
+  if (c) {
+    c.textContent = String(computerCount);
+  }
+
+  if (combined) {
+    combined.textContent = `${playerCount}/${computerCount}`;
   }
 }
 
-export function updateSubmitButton(enabled: boolean): void { (document.getElementById('btn-submit') as HTMLButtonElement).disabled = !enabled; }
+export function updateDifficultyDisplay(difficulty: string): void {
+  const display = document.getElementById('current-difficulty-display');
+
+  if (display) {
+    if (difficulty === 'easy') {
+      display.textContent = 'Ușor';
+    } else if (difficulty === 'hard') {
+      display.textContent = 'Greu';
+    } else {
+      display.textContent = 'Mediu';
+    }
+  }
+}
+
+export function updateSubmitButton(enabled: boolean): void {
+  (document.getElementById('btn-submit') as HTMLButtonElement).disabled = !enabled;
+}
 
 export function initTooltips(): void {
   const tooltip = document.createElement('div');
@@ -120,10 +238,16 @@ export function initTooltips(): void {
   }, { passive: true });
 
   const showTooltip = (e: MouseEvent) => {
-    if (Date.now() - lastTouchTime < 500) return;
+    if (Date.now() - lastTouchTime < 500) {
+      return;
+    }
+
     const target = (e.currentTarget as HTMLElement);
     const text = target.getAttribute('data-tooltip');
-    if (!text) return;
+
+    if (!text) {
+      return;
+    }
 
     tooltip.textContent = text;
     tooltip.classList.add('visible');
@@ -136,8 +260,13 @@ export function initTooltips(): void {
 
     tooltip.classList.remove('pos-top');
 
-    if (left < 10) left = 10;
-    if (left + tooltipRect.width > window.innerWidth - 10) left = window.innerWidth - tooltipRect.width - 10;
+    if (left < 10) {
+      left = 10;
+    }
+
+    if (left + tooltipRect.width > window.innerWidth - 10) {
+      left = window.innerWidth - tooltipRect.width - 10;
+    }
 
     if (top + tooltipRect.height > window.innerHeight - 10) {
       top = rect.top - tooltipRect.height - 8;
@@ -154,7 +283,7 @@ export function initTooltips(): void {
 
   const updateTooltips = () => {
     const elements = document.querySelectorAll('[data-tooltip]');
-    elements.forEach(el => {
+    elements.forEach((el) => {
       el.removeEventListener('mouseenter', showTooltip as any);
       el.removeEventListener('mouseleave', hideTooltip);
       el.removeEventListener('click', hideTooltip);
@@ -172,7 +301,10 @@ export function initTooltips(): void {
   observer.observe(document.body, { childList: true, subtree: true });
 }
 
-export function showDefinitionDialog(word: string, info: { lemma: string, definitions: { htmlRep: string, sourceName: string }[] } | null): void {
+export function showDefinitionDialog(
+  word: string,
+  info: { lemma: string; definitions: { htmlRep: string; sourceName: string }[] } | null
+): void {
   const overlay = document.createElement('div');
   overlay.className = 'blank-tile-overlay definition-overlay';
 
@@ -194,10 +326,10 @@ export function showDefinitionDialog(word: string, info: { lemma: string, defini
       headerExtra += `<span class="word-lemma"> forma lui <strong>${info.lemma}</strong></span>`;
     }
 
-    contentHtml = info.definitions.map(d => `
+    contentHtml = info.definitions.map((definition) => `
       <div class="definition-item">
-        <div class="definition-html">${d.htmlRep}</div>
-        <div class="definition-source">${d.sourceName}</div>
+        <div class="definition-html">${definition.htmlRep}</div>
+        <div class="definition-source">${definition.sourceName}</div>
       </div>
     `).join('<hr>');
   }
@@ -220,16 +352,22 @@ export function showDefinitionDialog(word: string, info: { lemma: string, defini
   document.body.appendChild(overlay);
 
   const closeBtn = overlay.querySelector('.close-def-btn')!;
+
   const close = () => {
     overlay.classList.add('fade-out');
+
     setTimeout(() => {
-      if (overlay.parentNode) document.body.removeChild(overlay);
+      if (overlay.parentNode) {
+        document.body.removeChild(overlay);
+      }
     }, 200);
   };
 
   closeBtn.addEventListener('click', close);
   overlay.addEventListener('click', (e) => {
-    if (e.target === overlay) close();
+    if (e.target === overlay) {
+      close();
+    }
   });
 }
 
@@ -245,7 +383,9 @@ export function showToast(message: string, type: 'info' | 'error' = 'info'): voi
   setTimeout(() => {
     toast.classList.add('fade-out');
     setTimeout(() => {
-      if (toast.parentNode) document.body.removeChild(toast);
+      if (toast.parentNode) {
+        document.body.removeChild(toast);
+      }
     }, 300);
   }, 3000);
 }

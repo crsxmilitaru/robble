@@ -1,4 +1,5 @@
 import { BOARD_SIZE, BONUS, BONUS_MAP } from './constants';
+import { createBoardCell } from './board-utils';
 import type { BoardCell, Placement } from './types';
 
 export interface ScoredWord { word: string; score: number; }
@@ -49,7 +50,6 @@ export function computeMove(board: (BoardCell | null)[][], placements: Placement
 
 export function applyPlacements(board: (BoardCell | null)[][], placements: Placement[]): void {
   for (const p of placements) {
-    const isBlank = p.tile.isBlank;
-    board[p.row][p.col] = { letter: isBlank ? ' ' : p.tile.letter, points: isBlank ? 0 : p.tile.points, isBlank, assignedLetter: p.assignedLetter };
+    board[p.row][p.col] = createBoardCell(p.tile, p.assignedLetter);
   }
 }

@@ -6,18 +6,30 @@ export class BoardRenderer {
   private placedThisTurn: Placement[];
   private onCellClick: (row: number, col: number) => void;
 
-  constructor(board: (BoardCell | null)[][], placedThisTurn: Placement[], handlers: { onCellClick: (row: number, col: number) => void; }) {
-    this.board = board; this.placedThisTurn = placedThisTurn; this.onCellClick = handlers.onCellClick;
+  constructor(
+    board: (BoardCell | null)[][],
+    placedThisTurn: Placement[],
+    handlers: { onCellClick: (row: number, col: number) => void }
+  ) {
+    this.board = board;
+    this.placedThisTurn = placedThisTurn;
+    this.onCellClick = handlers.onCellClick;
   }
 
   updateBoard(board: (BoardCell | null)[][], placedThisTurn: Placement[], hasSelection: boolean): void {
-    this.board = board; this.placedThisTurn = placedThisTurn;
+    this.board = board;
+    this.placedThisTurn = placedThisTurn;
+
     const boardEl = document.getElementById('board');
-    if (boardEl) boardEl.classList.toggle('has-selection', hasSelection);
+
+    if (boardEl) {
+      boardEl.classList.toggle('has-selection', hasSelection);
+    }
   }
 
   render(): void {
     const boardEl = document.getElementById('board')!;
+
     if (boardEl.children.length === 0) {
       for (let r = 0; r < BOARD_SIZE; r++) {
         for (let c = 0; c < BOARD_SIZE; c++) {
@@ -51,18 +63,28 @@ export class BoardRenderer {
 
   private renderBonus(cell: HTMLElement, r: number, c: number): void {
     const existingBonus = cell.querySelector('.bonus-label');
+
     if (this.board[r][c]) {
-      if (existingBonus) existingBonus.remove();
+      if (existingBonus) {
+        existingBonus.remove();
+      }
+
       return;
     }
 
     const bonus = BONUS_MAP[`${r},${c}`];
+
     if (!bonus) {
-      if (existingBonus) existingBonus.remove();
+      if (existingBonus) {
+        existingBonus.remove();
+      }
+
       return;
     }
 
-    if (existingBonus && cell.classList.contains(bonus)) return;
+    if (existingBonus && cell.classList.contains(bonus)) {
+      return;
+    }
 
     cell.innerHTML = ''; // Clear everything to render bonus correctly
     cell.classList.remove('dl', 'tl', 'dw', 'tw', 'center');
@@ -73,19 +95,25 @@ export class BoardRenderer {
       const label = document.createElement('span');
       label.className = 'bonus-label';
       const [mult, type] = labelText.split('\n');
-      label.innerHTML = type ? `<span class="mult">${mult}</span><span class="type">${type}</span>` : labelText;
+      label.innerHTML = type
+        ? `<span class="mult">${mult}</span><span class="type">${type}</span>`
+        : labelText;
       cell.appendChild(label);
     }
   }
 
   private renderTile(cell: HTMLElement, r: number, c: number): void {
     const tile = this.board[r][c];
-    const isPlacedThisTurn = this.placedThisTurn.some(p => p.row === r && p.col === c);
+    const isPlacedThisTurn = this.placedThisTurn.some((p) => p.row === r && p.col === c);
 
     if (!tile) {
       cell.classList.remove('has-tile', 'placed-this-turn');
       const existingTile = cell.querySelector('.tile-on-board');
-      if (existingTile) existingTile.remove();
+
+      if (existingTile) {
+        existingTile.remove();
+      }
+
       return;
     }
 
@@ -93,8 +121,12 @@ export class BoardRenderer {
     cell.classList.toggle('placed-this-turn', isPlacedThisTurn);
 
     let tileDiv = cell.querySelector('.tile-on-board') as HTMLElement;
-    const isBlank = !!(tile.isBlank || tile.assignedLetter);
-    const displayLetter = (tile.assignedLetter || tile.letter).toUpperCase();
+    const isBlank = tile.isBlank;
+    const displayLetter = (tile.assignedLetter ?? tile.letter).toUpperCase();
+    const pointsText = isBlank ? '' : String(tile.points);
+    const nextMarkup = isBlank
+      ? `<span class="letter">${displayLetter}</span>`
+      : `<span class="letter">${displayLetter}</span><span class="points">${tile.points}</span>`;
 
     if (!tileDiv) {
       tileDiv = document.createElement('div');
@@ -102,13 +134,16 @@ export class BoardRenderer {
       cell.appendChild(tileDiv);
     }
 
-    // Check if content changed to avoid unnecessary updates
-    const currentLetter = tileDiv.querySelector('.letter')?.textContent;
-    if (currentLetter !== displayLetter) {
+    if (
+      tileDiv.dataset.letter !== displayLetter ||
+      tileDiv.dataset.points !== pointsText ||
+      tileDiv.dataset.blank !== String(isBlank)
+    ) {
       tileDiv.classList.toggle('blank-tile', isBlank);
-      tileDiv.innerHTML = isBlank
-        ? `<span class="letter">${displayLetter}</span>`
-        : `<span class="letter">${tile.letter}</span><span class="points">${tile.points}</span>`;
+      tileDiv.innerHTML = nextMarkup;
+      tileDiv.dataset.letter = displayLetter;
+      tileDiv.dataset.points = pointsText;
+      tileDiv.dataset.blank = String(isBlank);
     }
   }
 }

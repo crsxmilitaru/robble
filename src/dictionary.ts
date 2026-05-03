@@ -12,6 +12,7 @@ export function getDictionaryWorker(): Worker {
     worker = new Worker(new URL('./dictionary-worker.ts', import.meta.url), { type: 'module' });
     worker.onmessage = (e) => {
       const handlers = Array.from(messageHandlers);
+
       for (const handler of handlers) {
         handler(e);
       }
@@ -29,7 +30,11 @@ let requestIdCounter = 0;
 
 export async function isValidWord(word: string): Promise<boolean> {
   const w = normalizeRomanianWord(word);
-  if (!w) return false;
+
+  if (!w) {
+    return false;
+  }
+
   const worker = getDictionaryWorker();
   const requestId = ++requestIdCounter;
 
@@ -51,12 +56,18 @@ export async function loadDictionary(): Promise<boolean> {
 
   return new Promise((resolve) => {
     const unsub = addWorkerListener((e) => {
-      if (e.data.requestId && e.data.requestId !== requestId) return;
+      if (e.data.requestId && e.data.requestId !== requestId) {
+        return;
+      }
 
       const { type, message, count, error } = e.data;
       switch (type) {
-        case 'status': statusEl.textContent = message; break;
-        case 'progress': statusEl.textContent = `Încărcat: ${count.toLocaleString()}...`; break;
+        case 'status':
+          statusEl.textContent = message;
+          break;
+        case 'progress':
+          statusEl.textContent = `Încărcat: ${count.toLocaleString()}...`;
+          break;
         case 'complete':
           statusEl.textContent = `${count.toLocaleString()} cuvinte încărcate.`;
           unsub();
@@ -96,10 +107,16 @@ interface DexonlineResponse {
 
 export async function fetchDefinition(word: string): Promise<WordInfo | null> {
   const normalized = normalizeRomanianWord(word).toLowerCase();
+
   try {
     const response = await fetch(`https://dexonline.ro/definitie/${normalized}/json`);
-    if (!response.ok) return null;
+
+    if (!response.ok) {
+      return null;
+    }
+
     const data: DexonlineResponse = await response.json();
+
     if (data.type === 'searchResults' && data.definitions) {
       return {
         lemma: data.word,
@@ -112,6 +129,7 @@ export async function fetchDefinition(word: string): Promise<WordInfo | null> {
   } catch {
     showToast('Eroare la preluarea definiției.', 'error');
   }
+
   return null;
 }
 

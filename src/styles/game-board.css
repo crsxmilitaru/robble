@@ -246,10 +246,11 @@
   bottom: clamp(4px, 1vmin, 8px);
   right: clamp(12px, 2vmin, 24px);
   display: flex;
-  gap: 12px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
   z-index: 50;
-  height: clamp(8px, 1.5vmin, 16px);
-  align-items: center;
+  height: auto;
 }
 
 .legend-item {
