@@ -1,4 +1,4 @@
-import type { TileInfo } from './types';
+import type { DictionaryMode, TileInfo } from './types';
 
 export const TILE_DISTRIBUTION: Record<string, TileInfo> = {
   'A': { count: 10, points: 1 }, 'B': { count: 2, points: 5 }, 'C': { count: 5, points: 1 },
@@ -11,6 +11,7 @@ export const TILE_DISTRIBUTION: Record<string, TileInfo> = {
   'Z': { count: 1, points: 8 }, ' ': { count: 2, points: 0, blank: true },
 };
 
+export const OPPONENT_NAME = 'Bot';
 export const RACK_SIZE = 7;
 export const BOARD_SIZE = 15;
 export const CENTER = 7;
@@ -39,5 +40,19 @@ export const BONUS_LABELS: Partial<Record<BonusType, string>> = {
   [BONUS.DL]: '2\nLitera', [BONUS.TL]: '3\nLitera', [BONUS.DW]: '2\nCuvânt', [BONUS.TW]: '3\nCuvânt', [BONUS.CENTER]: '★'
 };
 
-export const DICT_URLS = [`${import.meta.env.BASE_URL}loc-reduse-6.0.txt`];
+export const DEFAULT_DICT_MODE: DictionaryMode = 'standard';
+
+export const DICT_CONFIG: Record<DictionaryMode, { label: string; url: string; description: string }> = {
+  standard: {
+    label: 'Uzual',
+    url: `${import.meta.env.BASE_URL}loc-standard.txt`,
+    description: 'Fără arhaisme și regionalisme'
+  },
+  complete: {
+    label: 'Complet',
+    url: `${import.meta.env.BASE_URL}loc-reduse-6.0.txt`,
+    description: 'Include arhaisme și regionalisme'
+  }
+};
+
 export const ROMANIAN_LETTERS = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'l', 'm', 'n', 'o', 'p', 'r', 's', 't', 'u', 'v', 'x', 'z'];

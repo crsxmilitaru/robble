@@ -1,8 +1,29 @@
-import { DICT_URLS } from './constants';
+import { DEFAULT_DICT_MODE, DICT_CONFIG } from './constants';
 import { normalizeRomanianWord } from './dictionary-utils';
+import type { DictionaryMode } from './types';
 import { showToast } from './ui-utils';
 
 export { normalizeRomanianWord };
+
+const DICT_STORAGE_KEY = 'robble_dictionary_mode';
+
+export function getStoredDictionaryMode(): DictionaryMode {
+  const saved = localStorage.getItem(DICT_STORAGE_KEY);
+  if (saved === 'standard' || saved === 'complete') {
+    return saved;
+  }
+  return DEFAULT_DICT_MODE;
+}
+
+export function setStoredDictionaryMode(mode: DictionaryMode): void {
+  localStorage.setItem(DICT_STORAGE_KEY, mode);
+}
+
+let currentMode: DictionaryMode = getStoredDictionaryMode();
+
+export function getCurrentDictionaryMode(): DictionaryMode {
+  return currentMode;
+}
 
 let worker: Worker | null = null;
 const messageHandlers = new Set<(e: MessageEvent) => void>();
@@ -49,10 +70,13 @@ export async function isValidWord(word: string): Promise<boolean> {
   });
 }
 
-export async function loadDictionary(): Promise<boolean> {
-  const statusEl = document.getElementById('load-status')!;
+export async function loadDictionary(mode: DictionaryMode = getStoredDictionaryMode()): Promise<boolean> {
+  currentMode = mode;
+  setStoredDictionaryMode(mode);
+  const statusEl = document.getElementById('load-status');
   const worker = getDictionaryWorker();
   const requestId = ++requestIdCounter;
+  const urls = [DICT_CONFIG[mode].url];
 
   return new Promise((resolve) => {
     const unsub = addWorkerListener((e) => {
@@ -63,13 +87,19 @@ export async function loadDictionary(): Promise<boolean> {
       const { type, message, count, error } = e.data;
       switch (type) {
         case 'status':
-          statusEl.textContent = message;
+          if (statusEl) {
+            statusEl.textContent = message;
+          }
           break;
         case 'progress':
-          statusEl.textContent = `Încărcat: ${count.toLocaleString()}...`;
+          if (statusEl) {
+            statusEl.textContent = `Încărcat: ${count.toLocaleString()}...`;
+          }
           break;
         case 'complete':
-          statusEl.textContent = `${count.toLocaleString()} cuvinte încărcate.`;
+          if (statusEl) {
+            statusEl.textContent = `${count.toLocaleString()} cuvinte încărcate.`;
+          }
           unsub();
           resolve(count > 10000);
           break;
@@ -80,7 +110,7 @@ export async function loadDictionary(): Promise<boolean> {
           break;
       }
     });
-    worker.postMessage({ type: 'load', urls: DICT_URLS, requestId });
+    worker.postMessage({ type: 'load', urls, requestId });
   });
 }
 

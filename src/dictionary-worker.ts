@@ -3,8 +3,8 @@ import { normalizeRomanianWord } from './dictionary-utils';
 import { Trie } from './trie';
 import type { BoardCell, Tile } from './types';
 
-const dictionary = new Set<string>();
-const trie = new Trie();
+let dictionary = new Set<string>();
+let trie = new Trie();
 
 interface WorkerGameStatePayload {
   board: (BoardCell | null)[][];
@@ -25,6 +25,8 @@ self.onmessage = async (e: MessageEvent) => {
   const { type, urls = [], word = '', state, rack = [], difficulty = 'medium', requestId } = e.data as WorkerMessageData;
 
   if (type === 'load') {
+    dictionary = new Set<string>();
+    trie = new Trie();
     const errors: string[] = [];
 
     for (const url of urls) {

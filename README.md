@@ -16,8 +16,8 @@
 
 ## ✨ Caracteristici
 
-- **AI Inteligent**: Joacă împotriva unui calculator cu 3 niveluri de dificultate (Ușor, Mediu, Greu).
-- **Dicționar Românesc**: Validare automată a cuvintelor folosind un dicționar complet în limba română.
+- **Adversar Inteligent**: Joacă împotriva unui calculator cu 3 niveluri de dificultate (Ușor, Mediu, Greu).
+- **Dicționar Românesc**: Posibilitatea de a alege între dicționarul **Uzual** (fără arhaisme și regionalisme, axat pe limba curentă) și cel **Complet** (Scrabble LOC oficial cu peste 634.000 de forme).
 - **Interfață Modernă**: Design curat și responsiv, optimizat pentru orice dispozitiv.
 - **Istoric Joc**: Urmărește toate cuvintele plasate și scorurile obținute în timpul partidei.
 - **Gestionare Avansată**: Suport pentru schimbarea pieselor, trecerea rândului și amestecarea tablei.

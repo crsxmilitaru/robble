@@ -21,6 +21,10 @@
     width: 100%
   }
 
+  .left-actions {
+    gap: 8px;
+  }
+
   .scoreboard {
     grid-column: 1 / -1;
     justify-self: center;
@@ -29,9 +33,12 @@
     height: 46px
   }
 
-  .tile-stat .label,
-  #difficulty-selector label {
+  .tile-stat .label {
     display: none
+  }
+
+  #modal .custom-dropdown label {
+    display: block;
   }
 
   #btn-new-game {

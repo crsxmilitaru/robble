@@ -1,15 +1,15 @@
 import { AI } from './ai';
 import { createBoardCell, isWithinBoard } from './board-utils';
-import { BOARD_SIZE, CENTER, RACK_SIZE, TILE_DISTRIBUTION } from './constants';
-import { isValidWord } from './dictionary';
+import { BOARD_SIZE, CENTER, OPPONENT_NAME, RACK_SIZE, TILE_DISTRIBUTION } from './constants';
+import { getCurrentDictionaryMode, isValidWord, loadDictionary } from './dictionary';
 import type { GameState } from './game-state';
 import { BoardRenderer } from './renderers/board-renderer';
 import { HistoryRenderer } from './renderers/history-renderer';
 import { RackRenderer } from './renderers/rack-renderer';
 import { computeMove } from './scoring';
 import { soundManager } from './sounds';
-import type { BoardCell, DifficultyLevel, MoveHistoryItem, Placement, SavedGameData, Tile, ValidationResult } from './types';
-import { createExchangeDialog, promptBlankTileLetter, setMessage, showModal, updateDifficultyDisplay, updateScores as updateScoreDisplay, updateSubmitButton, updateTileCounts } from './ui-utils';
+import type { BoardCell, DictionaryMode, DifficultyLevel, MoveHistoryItem, Placement, SavedGameData, Tile, ValidationResult } from './types';
+import { createExchangeDialog, promptBlankTileLetter, setMessage, showModal, updateDictionaryDisplay, updateDifficultyDisplay, updateScores as updateScoreDisplay, updateSubmitButton, updateTileCounts } from './ui-utils';
 
 const STORAGE_KEY = 'robble_game';
 
@@ -29,6 +29,7 @@ export class Game implements GameState {
   private tileIdCounter = 0;
   history: MoveHistoryItem[] = [];
   difficulty: DifficultyLevel = 'medium';
+  dictionaryMode: DictionaryMode = getCurrentDictionaryMode();
 
   private boardRenderer: BoardRenderer;
   private rackRenderer: RackRenderer;
@@ -40,7 +41,7 @@ export class Game implements GameState {
     return this.firstMove;
   }
 
-  constructor(difficulty?: DifficultyLevel) {
+  constructor(difficulty?: DifficultyLevel, dictMode?: DictionaryMode) {
     this.board = Array.from({ length: BOARD_SIZE }, () => Array<BoardCell | null>(BOARD_SIZE).fill(null));
     this.boardRenderer = new BoardRenderer(this.board, this.placedThisTurn, {
       onCellClick: (r, c) => this.onCellClick(r, c)
@@ -49,6 +50,10 @@ export class Game implements GameState {
       onTileClick: (idx) => this.onRackTileClick(idx)
     });
     this.historyRenderer = new HistoryRenderer('history-list');
+
+    if (dictMode) {
+      this.dictionaryMode = dictMode;
+    }
 
     if (this.restoreGame()) {
       this.ai = new AI(this, this.difficulty);
@@ -79,9 +84,11 @@ export class Game implements GameState {
     this.updateScores();
     updateTileCounts(this.bag.length, this.playerRack.length, this.computerRack.length);
     updateDifficultyDisplay(this.difficulty);
+    updateDictionaryDisplay(this.dictionaryMode);
     this.historyRenderer.render(this.history);
     updateSubmitButton(this.placedThisTurn.length > 0);
   }
+
 
   private initBag(): void {
     this.bag = [];
@@ -406,11 +413,11 @@ export class Game implements GameState {
 
       this.consecutivePasses = 0;
       this.firstMove = false;
-      this.setMessage(`Calculator: ${result.words.join(', ')} (+${result.score})`);
+      this.setMessage(`${OPPONENT_NAME}: ${result.words.join(', ')} (+${result.score})`);
       soundManager.play('PLACE');
     } else {
       this.consecutivePasses++;
-      this.setMessage('Calculatorul a dat pass.');
+      this.setMessage(`${OPPONENT_NAME}ul a dat pass.`);
     }
 
     this.refillRack(this.computerRack);
@@ -461,10 +468,10 @@ export class Game implements GameState {
 
     if (this.playerScore > this.computerScore) {
       title = 'Felicitări! Ai câștigat!';
-      message = `Scor final: Tu ${this.playerScore} - Calculator ${this.computerScore}`;
+      message = `Scor final: Tu ${this.playerScore} - ${OPPONENT_NAME} ${this.computerScore}`;
     } else if (this.computerScore > this.playerScore) {
-      title = 'Calculatorul a câștigat!';
-      message = `Scor final: Tu ${this.playerScore} - Calculator ${this.computerScore}`;
+      title = `${OPPONENT_NAME}ul a câștigat!`;
+      message = `Scor final: Tu ${this.playerScore} - ${OPPONENT_NAME} ${this.computerScore}`;
     } else {
       title = 'Egalitate!';
       message = `Scor final: ${this.playerScore} - ${this.computerScore}`;
@@ -504,10 +511,16 @@ export class Game implements GameState {
     );
   }
 
-  newGame(newDifficulty?: DifficultyLevel): void {
+  async newGame(newDifficulty?: DifficultyLevel, newDictMode?: DictionaryMode): Promise<void> {
     if (newDifficulty) {
       this.difficulty = newDifficulty;
       this.ai.setDifficulty(newDifficulty);
+    }
+
+    if (newDictMode && newDictMode !== this.dictionaryMode) {
+      this.dictionaryMode = newDictMode;
+      this.setMessage('Reîncărcăm dicționarul...');
+      await loadDictionary(newDictMode);
     }
 
     this.board = Array.from({ length: BOARD_SIZE }, () => Array<BoardCell | null>(BOARD_SIZE).fill(null));
@@ -672,6 +685,7 @@ export class Game implements GameState {
       tileIdCounter: this.tileIdCounter,
       history: this.history,
       difficulty: this.difficulty,
+      dictionaryMode: this.dictionaryMode
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
   }
@@ -696,6 +710,9 @@ export class Game implements GameState {
       this.tileIdCounter = data.tileIdCounter;
       this.history = data.history;
       this.difficulty = data.difficulty;
+      if (data.dictionaryMode) {
+        this.dictionaryMode = data.dictionaryMode;
+      }
       return true;
     } catch {
       localStorage.removeItem(STORAGE_KEY);

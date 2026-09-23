@@ -1,4 +1,5 @@
-import { ROMANIAN_LETTERS } from './constants';
+import { DICT_CONFIG, ROMANIAN_LETTERS } from './constants';
+import type { DictionaryMode } from './types';
 
 type MessageStatus = {
   text: string;
@@ -41,20 +42,24 @@ export function showModal(
   const modalOverlay = document.getElementById('modal-overlay')!;
   const modalBtn = document.getElementById('modal-btn')!;
   const cancelBtn = document.getElementById('modal-cancel-btn')!;
-  const difficultySelector = document.getElementById('difficulty-selector')!;
+  const difficultySelector = document.getElementById('difficulty-selector');
+  const dictSelector = document.getElementById('dict-selector');
 
   document.getElementById('modal-title')!.textContent = title;
   document.getElementById('modal-message')!.textContent = message;
 
   if (showDifficulty) {
-    difficultySelector.classList.remove('hidden');
+    difficultySelector?.classList.remove('hidden');
+    dictSelector?.classList.remove('hidden');
   } else {
-    difficultySelector.classList.add('hidden');
+    difficultySelector?.classList.add('hidden');
+    dictSelector?.classList.add('hidden');
   }
 
   const cleanup = () => {
     modalOverlay.classList.add('hidden');
-    difficultySelector.classList.add('hidden');
+    difficultySelector?.classList.add('hidden');
+    dictSelector?.classList.add('hidden');
   };
 
   modalBtn.textContent = confirmText ?? (onConfirm ? 'Confirmă' : 'OK');
@@ -220,6 +225,14 @@ export function updateDifficultyDisplay(difficulty: string): void {
     } else {
       display.textContent = 'Mediu';
     }
+  }
+}
+
+export function updateDictionaryDisplay(mode: DictionaryMode): void {
+  const display = document.getElementById('current-dict-display');
+
+  if (display) {
+    display.textContent = DICT_CONFIG[mode]?.label || 'Uzual';
   }
 }
 

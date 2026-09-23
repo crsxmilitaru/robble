@@ -45,6 +45,7 @@ export interface MoveHistoryItem {
 }
 
 export type DifficultyLevel = 'easy' | 'medium' | 'hard';
+export type DictionaryMode = 'standard' | 'complete';
 
 export interface SavedGameData {
   board: (BoardCell | null)[][];
@@ -60,4 +61,5 @@ export interface SavedGameData {
   tileIdCounter: number;
   history: MoveHistoryItem[];
   difficulty: DifficultyLevel;
+  dictionaryMode?: DictionaryMode;
 }

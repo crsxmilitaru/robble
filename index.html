@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
-        content="Joacă Robble în limba română online gratuit. Antrenează-ți mintea cu cel mai popular joc de cuvinte împotriva AI-ului sau a prietenilor.">
+        content="Joacă Robble în limba română online gratuit. Antrenează-ți mintea cu cel mai popular joc de cuvinte împotriva botului sau a prietenilor.">
     <title>Robble - Joc de cuvinte</title>
     <link rel="icon" type="image/png" href="/icon-192.png" />
     <link rel="manifest" href="/manifest.json" />
@@ -132,14 +132,18 @@
                             class="label">TOATE:</span><span id="remaining-count">100</span></div>
                     <div class="tile-stat desktop-only" data-tooltip="Piesele tale"><span class="label">TU:</span><span
                             id="player-count">7</span></div>
-                    <div class="tile-stat desktop-only" data-tooltip="Piese AI"><span class="label">AI:</span><span
+                    <div class="tile-stat desktop-only" data-tooltip="Piese Bot"><span class="label">BOT:</span><span
                             id="computer-count">7</span></div>
-                    <div class="tile-stat mobile-only" data-tooltip="Tu / AI"><span id="rack-counts-combined">7/7</span>
+                    <div class="tile-stat mobile-only" data-tooltip="Tu / Bot"><span id="rack-counts-combined">7/7</span>
                     </div>
-                    <div style="width: 1px; height: 16px; background: var(--gray-200); margin: 0 2px;"></div>
+                    <div class="stat-separator"></div>
                     <span class="material-symbols-outlined tiles-icon" aria-hidden="true">speed</span>
-                    <div class="tile-stat" data-tooltip="Dificultate AI"><span class="label">DIF:</span><span
+                    <div class="tile-stat" data-tooltip="Dificultate Bot"><span class="label">DIF:</span><span
                             id="current-difficulty-display">Mediu</span></div>
+                    <div class="stat-separator desktop-only"></div>
+                    <span class="material-symbols-outlined tiles-icon desktop-only" aria-hidden="true">menu_book</span>
+                    <div class="tile-stat desktop-only" data-tooltip="Dicționar activ"><span class="label">DICT:</span><span
+                            id="current-dict-display">Uzual</span></div>
                 </div>
             </div>
             <div class="top-bar-actions">
@@ -150,7 +154,7 @@
                 <div class="player-score active" id="player1-score"><span class="player-name">Tu</span><span
                         class="score-value" id="p1-score">0</span></div>
                 <div class="turn-indicator" id="turn-indicator"></div>
-                <div class="player-score" id="player2-score"><span class="player-name">AI</span><span
+                <div class="player-score" id="player2-score"><span class="player-name">Bot</span><span
                         class="score-value" id="p2-score">0</span></div>
             </div>
         </div>
@@ -210,7 +214,7 @@
             <h2 id="modal-title"></h2>
             <p id="modal-message"></p>
             <div id="difficulty-selector" class="custom-dropdown hidden">
-                <label>Dificultate:</label>
+                <label>Dificultate</label>
                 <button id="difficulty-trigger" class="dropdown-trigger" aria-haspopup="listbox" aria-expanded="false">
                     <span id="difficulty-value" data-value="medium">Mediu</span>
                     <span class="material-symbols-outlined dropdown-arrow">expand_more</span>
@@ -219,6 +223,17 @@
                     <button class="dropdown-option" data-value="easy" role="option">Ușor</button>
                     <button class="dropdown-option selected" data-value="medium" role="option">Mediu</button>
                     <button class="dropdown-option" data-value="hard" role="option">Greu</button>
+                </div>
+            </div>
+            <div id="dict-selector" class="custom-dropdown hidden">
+                <label>Dicționar</label>
+                <button id="dict-trigger" class="dropdown-trigger" aria-haspopup="listbox" aria-expanded="false">
+                    <span id="dict-value" data-value="standard">Uzual</span>
+                    <span class="material-symbols-outlined dropdown-arrow">expand_more</span>
+                </button>
+                <div id="dict-menu" class="dropdown-menu hidden" role="listbox">
+                    <button class="dropdown-option selected" data-value="standard" role="option">Uzual</button>
+                    <button class="dropdown-option" data-value="complete" role="option">Complet</button>
                 </div>
             </div>
             <div class="modal-actions">

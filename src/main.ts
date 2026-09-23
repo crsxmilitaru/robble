@@ -1,4 +1,4 @@
-import { loadDictionary } from './dictionary';
+import { getStoredDictionaryMode, loadDictionary } from './dictionary';
 import { Game } from './game';
 import './styles/base.css';
 import './styles/game-board.css';
@@ -8,7 +8,7 @@ import './styles/rack.css';
 import './styles/responsive.css';
 import './styles/top-bar.css';
 import './styles/variables.css';
-import type { DifficultyLevel } from './types';
+import type { DictionaryMode, DifficultyLevel } from './types';
 import { initTooltips } from './ui-utils';
 import { initPWAInstall } from './pwa-install';
 import { soundManager } from './sounds';
@@ -20,11 +20,21 @@ function getSelectedDifficulty(): DifficultyLevel {
   return (valueEl?.dataset.value as DifficultyLevel) || 'medium';
 }
 
-function initCustomDropdown(): void {
-  const trigger = document.getElementById('difficulty-trigger')!;
-  const menu = document.getElementById('difficulty-menu')!;
-  const valueEl = document.getElementById('difficulty-value')!;
-  const options = menu.querySelectorAll('.dropdown-option');
+function getSelectedDictionaryMode(): DictionaryMode {
+  const valueEl = document.getElementById('dict-value');
+  return (valueEl?.dataset.value as DictionaryMode) || getStoredDictionaryMode();
+}
+
+function setupDropdown(triggerId: string, menuId: string, valueId: string): void {
+  const trigger = document.getElementById(triggerId);
+  const menu = document.getElementById(menuId);
+  const valueEl = document.getElementById(valueId);
+
+  if (!trigger || !menu || !valueEl) {
+    return;
+  }
+
+  const options = menu.querySelectorAll<HTMLElement>('.dropdown-option');
 
   const toggleMenu = () => {
     const isOpen = !menu.classList.contains('hidden');
@@ -38,7 +48,7 @@ function initCustomDropdown(): void {
   };
 
   const selectOption = (option: HTMLElement) => {
-    const value = option.dataset.value as DifficultyLevel;
+    const value = option.dataset.value || '';
     const label = option.textContent || '';
     valueEl.dataset.value = value;
     valueEl.textContent = label;
@@ -56,7 +66,7 @@ function initCustomDropdown(): void {
   options.forEach(option => {
     option.addEventListener('click', (e) => {
       e.stopPropagation();
-      selectOption(option as HTMLElement);
+      selectOption(option);
     });
   });
 
@@ -73,6 +83,22 @@ function initCustomDropdown(): void {
       trigger.setAttribute('aria-expanded', 'false');
     }
   });
+}
+
+function syncDictionaryDropdown(): void {
+  const mode = getStoredDictionaryMode();
+  const valueEl = document.getElementById('dict-value');
+  const menu = document.getElementById('dict-menu');
+
+  if (valueEl && menu) {
+    valueEl.dataset.value = mode;
+    const option = menu.querySelector<HTMLElement>(`[data-value="${mode}"]`);
+    if (option) {
+      valueEl.textContent = option.textContent || 'Uzual';
+      menu.querySelectorAll('.dropdown-option').forEach(opt => opt.classList.remove('selected'));
+      option.classList.add('selected');
+    }
+  }
 }
 
 function initMuteButton(): void {
@@ -92,7 +118,8 @@ function initMuteButton(): void {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-  const loaded = await loadDictionary();
+  const initialMode = getStoredDictionaryMode();
+  const loaded = await loadDictionary(initialMode);
   if (!loaded) {
     document.getElementById('load-status')!.textContent = 'Eroare la încărcare. Se reîncearcă...';
     setTimeout(() => location.reload(), 3000);
@@ -108,13 +135,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     loadingScreen.style.display = 'none';
   }, 500);
 
-  initCustomDropdown();
+  setupDropdown('difficulty-trigger', 'difficulty-menu', 'difficulty-value');
+  setupDropdown('dict-trigger', 'dict-menu', 'dict-value');
+  syncDictionaryDropdown();
   initTooltips();
   initPWAInstall();
   initMuteButton();
 
   const initialDifficulty = getSelectedDifficulty();
-  game = new Game(initialDifficulty);
+  game = new Game(initialDifficulty, initialMode);
 
   document.getElementById('btn-submit')!.addEventListener('click', () => game.submitMove());
   document.getElementById('btn-pass')!.addEventListener('click', () => {
@@ -126,9 +155,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     game.exchangeDialog();
   });
   document.getElementById('btn-new-game')!.addEventListener('click', () => {
-    game.showModal('Joc Nou', 'Alege dificultatea și începe un joc nou. Progresul curent va fi pierdut.', () => {
+    syncDictionaryDropdown();
+    game.showModal('Joc Nou', 'Alege setările și începe un joc nou. Progresul curent va fi pierdut.', async () => {
       const difficulty = getSelectedDifficulty();
-      game.newGame(difficulty);
+      const dictMode = getSelectedDictionaryMode();
+      await game.newGame(difficulty, dictMode);
     }, null, true);
   });
 

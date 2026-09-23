@@ -1,3 +1,4 @@
+import { OPPONENT_NAME } from '../constants';
 import { fetchDefinition } from '../dictionary';
 import type { MoveHistoryItem } from '../types';
 import { showDefinitionDialog } from '../ui-utils';
@@ -27,7 +28,7 @@ export class HistoryRenderer {
 
       el.innerHTML = `
         <div class="item-header">
-          <span>${item.player === 'player' ? 'Tu' : 'AI'}</span>
+          <span>${item.player === 'player' ? 'Tu' : OPPONENT_NAME}</span>
           ${item.isRobble ? '<span class="robble-badge">ROBBLE!</span>' : ''}
         </div>
         <div class="item-words">${wordsHtml}</div>
